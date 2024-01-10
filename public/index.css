@@ -1,0 +1,174 @@
+*{
+  box-sizing: border-box;
+  margin: 0px;
+  font-family: Roboto, sans-serif;
+}
+
+body{
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+}
+
+.title-div{
+  background-color: rgba(70, 119, 255, 0.123); /* Black background with 50% transparency */
+  border: 1px solid #000000; /* Thin black border */
+  border-radius: 10px; /* Soft roundness */
+  box-shadow: 0px 0px 10px #000000; /* Outer box shadow */
+  padding: 10px;
+  width: max-content;
+  max-width: 600px;
+}
+
+#dashboard-content{
+  margin:40px;
+}
+
+h1{
+  font-weight: 800;
+  text-align: center;
+  width: 100%;
+}
+
+h3{
+  text-decoration: underline;
+}
+
+section{
+  max-width: 80vw;
+  min-width: 40vw;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid black;
+  background-color: rgba(180, 200, 255, 0.123);
+  border-radius: 10px;
+  box-shadow: 0px 0px 10px #000000;
+  padding: 30px;
+  margin:20px;
+}
+
+#student-title{
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  margin-bottom: 10px;
+}
+
+#student-content{
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 1fr;
+  grid-gap: 50px;
+  width: 100%;
+}
+
+#student-add-form{
+  padding: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.section-add{
+  padding: 10px;
+  border: 1px solid black;
+  background-color: rgb(249, 251, 255);
+  border-radius: 7px;
+  max-width: 150px;
+  font-size: medium;
+  margin-right: 7px;
+  font-weight: 600;
+}
+
+.section-submit{
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border: 1px solid black;
+  background-color: rgb(5, 38, 119);
+  color: aliceblue;
+  font-weight: 700;
+  border-radius: 7px;
+  max-width: 100px;
+  transition: all ease 0.2ms;
+}
+
+.student-submit:hover{
+  background-color: rgb(4, 23, 71);
+  cursor: pointer;
+}
+
+.note-div{
+  display: flex;
+  min-width: 500px;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.note-student{
+  display: grid;
+  width: 70%;
+  grid-template-columns: 1fr 0.2fr 0.2fr;
+  grid-template-rows: 1fr;
+  grid-gap: 0px;
+  background-color: rgba(4, 23, 71, 0.164);
+  margin:5px;
+  border: 2px solid rgb(1, 1, 105);
+  border-radius: 10px;
+}
+
+.grid-element{
+  padding: 10px;
+  border-left: 1px solid rgb(1, 1, 105);
+  font-weight: 500;
+  font-size: larger;
+  text-align: center;
+}
+
+.mark-buttons{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 30%;
+}
+
+.grid-button{
+  padding: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  border: 1px solid black;
+  font-weight: 700;
+  border-radius: 7px;
+  max-width: 100px;
+  transition: all ease 0.2ms;
+  background-color: rgb(5, 38, 119);
+  color: aliceblue;
+  margin-left: 5px;
+}
+
+.grid-button:hover{
+  background-color: rgb(4, 23, 71);
+  cursor: pointer;
+}
+
+#viz{
+  padding: 10px;
+  background-color: rgb(230, 235, 247);
+  border: 2px solid rgb(1, 1, 105);
+  border-radius: 10px;
+  width: 100%;
+}
+
+#prof-title{
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 10px;
+}
+
+#rootAtt{
+  margin: 10px;
+}
+
+

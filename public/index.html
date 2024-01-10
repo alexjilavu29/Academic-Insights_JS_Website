@@ -1,0 +1,260 @@
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Document</title>
+  <link rel="stylesheet" href="index.css" />
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <script type="module">
+    import { reactive, html } from 'https://esm.sh/@arrow-js/core'
+    import dataStore from './data-store.mjs'
+
+    const { store } = dataStore
+
+    window.onload = async () => {
+      const root = document.getElementById('root')
+      const rootAdd = document.getElementById('rootAdd')
+      const rootAtt = document.getElementById('rootAtt')
+      const viz = document.getElementById('viz')
+      const vizAtt = document.getElementById('vizAtt')
+
+      const data = reactive({
+        scoreList: [],
+        candidate: {
+          courseName: '',
+          score: 0
+        },
+        chart: {
+          labels: [],
+          data: []
+        },
+        selected: 0,
+        attendantCandidate: {
+          count: 0
+         }
+      })
+
+      const chart = new Chart(viz, {
+          type: 'bar',
+          data: {
+            labels:[],
+            datasets: [{
+              label: 'Punctaj Notă',
+              data: [],
+              borderWidth: 1
+            }]
+          },
+          options: {
+            scales: {
+              y: {
+                beginAtZero: true
+              }
+            }
+          }
+        })
+
+        function getMonthName(index) {
+      const months = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+      return months[index % 12]; 
+    }
+
+
+        const chartSecondDB = new Chart(vizAtt, {
+        type: 'line',
+        data: {
+          labels: [],
+          datasets: [{
+            label: 'Număr Cursanți',
+            data: [],
+            borderWidth: 1
+          }]
+        },
+        options: {
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+
+      await store.getAll()
+      data.scoreList = store.data
+
+
+      console.log(store.data)
+      chart.data.labels = store.data.map(e => e.courseName)
+      chart.data.datasets = [{
+        label: 'Punctaj Notă',
+        data: store.data.map(e => e.score),
+        borderWidth: 1
+      }, {
+        label: 'Credite Acumulate',
+        data: store.data.map(e => e.score * 4),
+        borderWidth: 1
+      }]
+      chart.update()
+
+      const updateSecondChart = async () => {
+        await store.getAllAttendants();
+        chartSecondDB.data.labels = store.data2.map((_, index) => getMonthName(index));
+        chartSecondDB.data.datasets[0].data = store.data2.map(item => item.count); 
+        chartSecondDB.update();
+      };
+      await updateSecondChart();
+
+      const redrawChart = () => {
+        chart.data.labels = store.data.map(e => e.courseName)
+        chart.data.datasets = [{
+          label: 'Punctaj Notă',
+          data: store.data.map(e => e.score),
+          borderWidth: 1
+        }, {
+        label: 'Credite Acumulate',
+        data: store.data.map(e => e.score * 4),
+        borderWidth: 1
+      }]
+        chart.update()
+      }
+
+
+      const addItem = async () => {
+        await store.addOne(data.candidate)
+        data.scoreList = store.data
+        redrawChart()
+      }
+
+      const addAttendant = async () => {
+        await store.addOneAttendant({ count: parseInt(data.attendantCandidate.count) });
+        data.attendantCandidate.count = 0; // Reset the form field
+        await updateSecondChart();
+      }
+
+
+      const deleteItem = async (id) => {
+        await store.deleteOne(id)
+        data.scoreList = store.data
+        redrawChart()
+      }
+
+      const selectItem = (id) => {
+        data.selected = id
+      }
+
+      const cancelItem = () => {
+        data.selected = 0
+      }
+
+      const saveItem = async (id) => {
+        await store.saveOne(id, data.candidate)
+        data.selected = 0
+        data.scoreList = store.data
+        redrawChart()
+      }
+
+      const colorList = html`<div>
+        ${() => data.scoreList.map(e => {
+          if (e.id  === data.selected) {
+            return html`
+              <div style="margin:5px;">
+              <input type="text" class="section-add" placeholder="Materie" @input="${(evt) => {
+                data.candidate.courseName = evt.target.value
+              }}" value="${e.courseName}" />
+              <input type="text" class="section-add"  placeholder="Notă" @input="${(evt) => {
+                data.candidate.score = evt.target.value
+              }}" value="${e.score}" />
+              <input type="button" class="grid-button" value="Salvează" @click="${() => saveItem(e.id)}" />
+              <input type='button' class="grid-button" value='Anulează' @click="${() => cancelItem()}"/>
+              </div>
+              `
+          } else {
+            return html`
+              <div class="note-div">
+                <div class="note-student">
+                  <div class="grid-element" style="border-left: 0px; text-align:left;">${e.courseName}</div>
+                 <div class="grid-element">${e.score}/10</div>
+                 <div class="grid-element">${e.score*4}</div>
+                </div>
+                <div class="mark-buttons"> 
+                <input type='button' class="grid-button" value='Șterge' @click="${() => deleteItem(e.id)}"/>
+                <input type='button' class="grid-button" value='Editează' @click="${() => selectItem(e.id)}"/>
+              </div>
+            </div>
+            `
+          }
+        })}
+      </div>`
+
+      const colorForm = html`<div id="student-add-form">
+        <input type="text" class="section-add" placeholder="Materie" @input="${(evt) => {
+          data.candidate.courseName = evt.target.value
+        }}"/>
+        <input type="text" class="section-add" placeholder="Notă" @input="${(evt) => {
+          data.candidate.score = evt.target.value
+        }}" />
+        <input type="button" class="section-submit" value="ADAUGĂ" @click="${() => addItem()}" />
+      </div>`
+
+      const attendantForm = html`<div>
+      <input type="number" class="section-add" style="max-width:160px" placeholder="Număr Cursanți" @input="${(evt) => {
+        data.attendantCandidate.count = evt.target.value
+      }}"/>
+      <input type="button" class="section-submit" value="ADAUGĂ" @click="${() => addAttendant()}" />
+      </div>`
+
+
+      const scoreList = html`
+        <!-- <h2 id="marks-title">Materii Înregistrate</h2> -->
+        ${colorList}
+
+      `
+      const scoreForm = html`
+      ${colorForm}
+      `
+
+      scoreList(root)
+      scoreForm(rootAdd)
+attendantForm(rootAtt)
+
+    }
+  </script>
+</head>
+<body>
+  <div class="title-div" id="dashboard-content">
+    <h1>DASHBOARD CONCEPT</h1>
+  </div>
+  <section id="student-section">
+    <div id="student-title">
+      <div class="title-div">
+        <h2>STUDENT</h2>
+      </div>
+      <div id="rootAdd"></div>
+    </div>
+    <div id="student-content">
+      <div>
+        <h3>Jilavu Alexandru</h3>
+        <div id="root"></div>
+      </div>
+      <div> <canvas id="viz"></canvas></div>
+    </div>
+    <div>
+      <div></div>
+    </div>
+  </section>
+
+  <section>
+    <div id="prof-title">
+      <div class="title-div">
+        <h2>PROFESOR</h2>
+      </div>
+      <div id="rootAtt"></div>
+    </div>
+    <div>
+      <canvas id="vizAtt"></canvas>
+    </div>
+  </section>
+</body>
+</html> 
+
