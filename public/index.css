@@ -47,6 +47,11 @@ section{
   margin:20px;
 }
 
+#student-section{
+  align-items: center;
+  justify-content: center;
+}
+
 #student-title{
   display: flex;
   align-items: center;
@@ -158,6 +163,21 @@ section{
   border-radius: 10px;
   width: 100%;
 }
+
+#mean-display{
+  display:flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 15px;
+  background-color: rgb(67, 84, 238);
+  color:whitesmoke;
+  padding: 10px;
+  width: max-content; 
+  border-radius: 10px;
+  font-size: larger;
+  font-weight: 700;
+}
+
 
 #prof-title{
   display: flex;

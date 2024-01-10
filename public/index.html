@@ -2,7 +2,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>Proiect Tehnologii Web</title>
   <link rel="stylesheet" href="index.css" />
 
   <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -83,6 +83,9 @@
       await store.getAll()
       data.scoreList = store.data
 
+      const meanScore = calculateMean(data.scoreList);
+      document.getElementById('meanScoreDisplay').textContent = `Medie Generală: ${meanScore.toFixed(2)}`;
+
 
       console.log(store.data)
       chart.data.labels = store.data.map(e => e.courseName)
@@ -96,6 +99,7 @@
         borderWidth: 1
       }]
       chart.update()
+      
 
       const updateSecondChart = async () => {
         await store.getAllAttendants();
@@ -116,14 +120,18 @@
         data: store.data.map(e => e.score * 4),
         borderWidth: 1
       }]
-        chart.update()
+        chart.update();
+        updateMeanScoreDisplay()
       }
 
 
       const addItem = async () => {
         await store.addOne(data.candidate)
+        await store.getAll();
         data.scoreList = store.data
-        redrawChart()
+        redrawChart();
+        updateMeanScoreDisplay()
+
       }
 
       const addAttendant = async () => {
@@ -134,9 +142,11 @@
 
 
       const deleteItem = async (id) => {
-        await store.deleteOne(id)
+        await store.deleteOne(id);
+        await store.getAll();
         data.scoreList = store.data
-        redrawChart()
+        redrawChart();
+        updateMeanScoreDisplay()
       }
 
       const selectItem = (id) => {
@@ -148,10 +158,15 @@
       }
 
       const saveItem = async (id) => {
-        await store.saveOne(id, data.candidate)
-        data.selected = 0
+        await store.saveOne(id, { 
+        courseName: data.candidate.courseName, 
+        score: parseInt(data.candidate.score) 
+       });
+        data.selected = 0;
+        await store.getAll();
         data.scoreList = store.data
-        redrawChart()
+        redrawChart();
+        updateMeanScoreDisplay()
       }
 
       const colorList = html`<div>
@@ -183,6 +198,7 @@
               </div>
             </div>
             `
+            updateMeanScoreDisplay();
           }
         })}
       </div>`
@@ -219,6 +235,16 @@
 attendantForm(rootAtt)
 
     }
+
+    const calculateMean = (scoreList) => {
+    const total = scoreList.reduce((acc, item) => acc + item.score, 0);
+    return scoreList.length > 0 ? total / scoreList.length : 0;}
+
+    const updateMeanScoreDisplay = () => {
+    const meanScore = calculateMean(data.scoreList);
+    document.getElementById('meanScoreDisplay').textContent = `Medie Generală: ${meanScore.toFixed(2)}`;
+    };
+
   </script>
 </head>
 <body>
@@ -239,8 +265,8 @@ attendantForm(rootAtt)
       </div>
       <div> <canvas id="viz"></canvas></div>
     </div>
-    <div>
-      <div></div>
+    <div id="mean-display">
+      <div id="meanScoreDisplay"></div>
     </div>
   </section>
 
